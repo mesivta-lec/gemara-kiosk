@@ -67,29 +67,29 @@
     const footer = document.getElementById('footer');
 
     function openAllDaf() {
-      menu.classList.add('hidden');
-      viewer.classList.remove('hidden');
-      backBtn.classList.remove('hidden');
-      floatingBack.style.display = 'flex';
-      footer.classList.add('hidden');
+      showViewer();
       frame.src = 'https://alldaf.org/';
     }
 
     function openIDaf() {
+      showViewer();
+      // Bypass iframe block with cors.bridged.cc
+      frame.src = 'https://cors.bridged.cc/http://www.idafyomi.com/';
+    }
+
+    function showViewer() {
       menu.classList.add('hidden');
       viewer.classList.remove('hidden');
-      backBtn.classList.remove('hidden');
-      floatingBack.style.display = 'flex';
+      backBtn.classList.add('hidden');     // ← Hide header ×
+      floatingBack.style.display = 'flex'; // ← Show floating ×
       footer.classList.add('hidden');
-      // Bypass X-Frame-Options with CORS proxy
-      frame.src = 'https://cors.bridged.cc/http://www.idafyomi.com/';
     }
 
     function goBack() {
       viewer.classList.add('hidden');
       menu.classList.remove('hidden');
-      backBtn.classList.add('hidden');
-      floatingBack.style.display = 'none';
+      backBtn.classList.remove('hidden');  // ← Show header ×
+      floatingBack.style.display = 'none'; // ← Hide floating ×
       footer.classList.remove('hidden');
       frame.src = '';
     }
