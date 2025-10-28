@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Gemara Learning Kiosk</title>
+  <style>
+    :root {
+      --bg: #0a192f;
+      --card: #172a45;
+      --accent: #2a9d8f;
+      --text: #e2e8f0;
+      --hover: #48b4a6;
+      --back: #e76f51;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body, html { height:100%; font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); overflow:hidden; }
+    .header {
+      position:fixed; top:0; left:0; right:0; height:70px;
+      background:var(--card); border-bottom:4px solid var(--accent);
+      display:flex; align-items:center; justify-content:center;
+      z-index:1000; padding:0 20px;
+    }
+    .back-btn {
+      position:absolute; left:20px; background:var(--back); color:white;
+      border:none; border-radius:50%; width:48px; height:48px;
+      font-size:1.8rem; cursor:pointer; display:flex;
+      align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      transition:0.2s;
+    }
+    .back-btn:hover { background:#d32f2f; transform:scale(1.1); }
+    h1 {
+      font-size:1.9rem; font-weight:700; margin:0;
+      display:flex; align-items:center; gap:10px;
+    }
+    h1::after { content:"📖"; font-size:1.7rem; }
+    .main {
+      margin-top:70px; height:calc(100% - 70px);
+      display:flex; flex-direction:column; align-items:center;
+      justify:content:center; padding:20px; gap:25px;
+    }
+    .btn {
+      background:var(--card); color:var(--text); border:none;
+      border-radius:20px; padding:30px 50px; font-size:1.6rem;
+      font-weight:600; cursor:pointer; width:85%; max-width:550px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.4); transition:0.25s;
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+    }
+    .btn:hover {
+      background:var(--hover); transform:translateY(-5px);
+      box-shadow:0 14px 28px rgba(0,0,0,0.5);
+    }
+    .btn i { font-size:3.5rem; }
+    iframe {
+      width:100%; height:100%; border:none;
+    }
+    .footer {
+      position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+      background:rgba(23,42,69,0.95); color:#94a3b8; padding:8px 16px;
+      border-radius:16px; font-size:0.78rem; text-align:center;
+      max-width:85%; line-height:1.4; backdrop-filter:blur(10px);
+      border:1px solid #334155; box-shadow:0 4px 12px rgba(0,0,0,0.3);
+      opacity:1; transition:opacity 0.3s;
+    }
+    .footer strong { color:#e2e8f0; }
+    .footer.hidden { opacity:0; pointer-events:none; }
+    .hidden { display:none; }
+    @media (max-width: 900px) {
+      .btn { padding:25px 40px; font-size:1.4rem; }
+      h1 { font-size:1.6rem; }
+      .back-btn { width:44px; height:44px; font-size:1.6rem; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn hidden" id="backBtn" onclick="goBack()">×</button>
+    <h1>Gemara Learning Kiosk</h1>
+  </div>
+
+  <div class="main" id="menu">
+    <button class="btn" onclick="openAllDaf()">
+      <i class="material-icons">menu_book</i>
+      All Daf
+    </button>
+    <button class="btn" onclick="openIDaf()">
+      <i class="material-icons">auto_stories</i>
+      iDaf Yomi
+    </button>
+  </div>
+
+  <div class="main hidden" id="viewer">
+    <iframe id="siteFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
+  </div>
+
+  <div class="footer" id="footer">
+    Please only use this Kiosk for Gemara studies. Misuse may result in <strong>Knas</strong>.<br>
+    <strong>Monitored by Google Workspace AI.</strong> © Mesivta Lubavitch Miami 5786
+  </div>
+
+  <script>
+    const menu = document.getElementById('menu');
+    const viewer = document.getElementById('viewer');
+    const frame = document.getElementById('siteFrame');
+    const backBtn = document.getElementById('backBtn');
+    const footer = document.getElementById('footer');
+    let inSite = false;
+
+    function openAllDaf() {
+      inSite = true;
+      menu.classList.add('hidden');
+      viewer.classList.remove('hidden');
+      backBtn.classList.remove('hidden');
+      footer.classList.add('hidden');
+      frame.src = 'https://alldaf.org/';
+    }
+
+    function openIDaf() {
+      inSite = true;
+      window.location.href = 'http://www.idafyomi.com/';
+    }
+
+    function goBack() {
+      if (window.location.href.includes('idafyomi.com')) {
+        if (window.chrome?.kiosk) {
+          chrome.kiosk.restart();
+        } else {
+          history.back();
+        }
+      } else {
+        inSite = false;
+        viewer.classList.add('hidden');
+        menu.classList.remove('hidden');
+        backBtn.classList.add('hidden');
+        footer.classList.remove('hidden');
+        frame.src = '';
+      }
+    }
+
+    // Auto-restart every 59 min
+    if (window.chrome?.kiosk) {
+      setTimeout(() => chrome.kiosk.restart(), 59 * 60 * 1000);
+    }
+  </script>
+</body>
+</html>
