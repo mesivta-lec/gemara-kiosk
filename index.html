@@ -81,7 +81,8 @@
       backBtn.classList.remove('hidden');
       floatingBack.style.display = 'flex';
       footer.classList.add('hidden');
-      frame.src = 'http://www.idafyomi.com/';
+      // Bypass X-Frame-Options with CORS proxy
+      frame.src = 'https://cors.bridged.cc/http://www.idafyomi.com/';
     }
 
     function goBack() {
